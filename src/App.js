@@ -11,11 +11,12 @@ const OCRAnswerBot = () => {
   const [capturedImage, setCapturedImage] = useState(null); // To display captured image
 
   useEffect(() => {
+    const videoElement = videoRef.current; // Capture the ref value in a variable
     startCamera();
 
     // Cleanup function
     return () => {
-      const stream = videoRef.current?.srcObject;
+      const stream = videoElement?.srcObject;
       if (stream) {
         const tracks = stream.getTracks();
         tracks.forEach(track => track.stop());
@@ -131,7 +132,11 @@ const OCRAnswerBot = () => {
       {capturedImage && (
         <div>
           <h2>Captured Image:</h2>
-          <img src={capturedImage} alt="Captured Question" style={{ width: "100%", maxWidth: "400px" }} />
+          <img
+            src={capturedImage}
+            alt="Captured Question"
+            style={{ width: "100%", maxWidth: "400px" }}
+          />
         </div>
       )}
 
