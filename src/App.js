@@ -9,11 +9,12 @@ const OCRAnswerBot = () => {
   const [answer, setAnswer] = useState("");
   const [isProcessing, setIsProcessing] = useState(false); // Prevent multiple OCR calls
   const [capturedImage, setCapturedImage] = useState(null); // To display captured image
-//hello
+
   useEffect(() => {
     startCamera();
+
+    // Cleanup function
     return () => {
-      // Stop the video stream when the component is unmounted
       const stream = videoRef.current?.srcObject;
       if (stream) {
         const tracks = stream.getTracks();
@@ -42,10 +43,7 @@ const OCRAnswerBot = () => {
     canvas.height = videoRef.current.videoHeight;
     context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
-    // Here, you can add cropping logic to focus on the area where the question is likely to appear
     const imageData = canvas.toDataURL("image/png");
-
-    // Set the captured image to display below
     setCapturedImage(imageData);
 
     processImage(canvas); // Process the captured image
@@ -72,7 +70,6 @@ const OCRAnswerBot = () => {
     if (isProcessing) return;
     setIsProcessing(true);
 
-    // Preprocess the image before sending to Tesseract.js
     const preprocessedImage = preprocessImage(canvas);
 
     // Use Tesseract.js to recognize text from the image
@@ -92,7 +89,6 @@ const OCRAnswerBot = () => {
 
   // Filter out unwanted characters or extra data from the recognized text
   const filterText = (text) => {
-    // Basic filter to remove non-alphanumeric characters, extra spaces, and other garbage
     const cleanText = text.replace(/[^a-zA-Z0-9\s?.,!]/g, '').trim();
     return cleanText;
   };
