@@ -11,15 +11,15 @@ const OCRAnswerBot = () => {
   const [capturedImage, setCapturedImage] = useState(null); // To display captured image
 
   useEffect(() => {
-    const videoElement = videoRef.current; // Capture the ref value in a variable
+    const videoElement = videoRef.current;
     startCamera();
 
-    // Cleanup function
+    // Cleanup function to stop video stream when component is unmounted
     return () => {
       const stream = videoElement?.srcObject;
       if (stream) {
         const tracks = stream.getTracks();
-        tracks.forEach(track => track.stop());
+        tracks.forEach((track) => track.stop());
       }
     };
   }, []);
@@ -52,18 +52,7 @@ const OCRAnswerBot = () => {
 
   // Preprocess and filter the image before passing it to Tesseract.js
   const preprocessImage = (canvas) => {
-    const context = canvas.getContext("2d");
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-
-    // Convert to grayscale to reduce noise and improve recognition
-    for (let i = 0; i < data.length; i += 4) {
-      const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-      data[i] = data[i + 1] = data[i + 2] = avg; // Set red, green, and blue channels to the average value
-    }
-
-    context.putImageData(imageData, 0, 0);
-    return canvas.toDataURL("image/png");
+    return canvas.toDataURL("image/png"); // No grayscale processing for better OCR
   };
 
   // Process the image captured from the camera feed using Tesseract.js
@@ -77,6 +66,7 @@ const OCRAnswerBot = () => {
     Tesseract.recognize(preprocessedImage, "eng", {
       logger: (m) => console.log(m), // Optional: show OCR progress
     }).then(({ data: { text } }) => {
+      console.log("Recognized Text: ", text); // Debug recognized text
       if (text.trim()) {
         const filteredText = filterText(text.trim());
         setRecognizedText(filteredText);
@@ -90,7 +80,7 @@ const OCRAnswerBot = () => {
 
   // Filter out unwanted characters or extra data from the recognized text
   const filterText = (text) => {
-    const cleanText = text.replace(/[^a-zA-Z0-9\s?.,!]/g, '').trim();
+    const cleanText = text.replace(/[^a-zA-Z0-9\s?.,!]/g, "").trim();
     return cleanText;
   };
 
@@ -110,6 +100,7 @@ const OCRAnswerBot = () => {
           },
         }
       );
+      console.log("OpenAI Response: ", response.data); // Debug OpenAI API response
       setAnswer(response.data.choices[0].message.content);
     } catch (error) {
       console.error("Error fetching answer:", error);
@@ -121,18 +112,13 @@ const OCRAnswerBot = () => {
     <div style={styles.container}>
       <h1 style={styles.header}>OCR-AnswerBot</h1>
       <div style={styles.cameraContainer}>
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          style={styles.video}
-        />
+        <video ref={videoRef} autoPlay playsInline style={styles.video} />
         <div style={styles.overlay}>Point the camera to any text!</div>
       </div>
-      
-      <button 
-        onClick={captureFrame} 
-        disabled={isProcessing} 
+
+      <button
+        onClick={captureFrame}
+        disabled={isProcessing}
         style={styles.captureButton}
       >
         {isProcessing ? "Processing..." : "Capture Snapshot"}
@@ -176,6 +162,7 @@ const styles = {
     margin: "auto",
     height: "100vh",
     justifyContent: "center",
+    overflow: "hidden", // Prevents overflow on mobile
   },
   header: {
     fontSize: "2em",
@@ -216,6 +203,8 @@ const styles = {
     cursor: "pointer",
     margin: "20px 0",
     transition: "background-color 0.3s",
+    width: "100%", // Make button responsive
+    maxWidth: "200px", // Ensure button doesn't grow too large on desktop
   },
   capturedImageContainer: {
     textAlign: "center",
