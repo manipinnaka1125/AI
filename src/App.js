@@ -9,7 +9,7 @@ const OCRAnswerBot = () => {
   const [answer, setAnswer] = useState("");
   const [isProcessing, setIsProcessing] = useState(false); // Prevent multiple OCR calls
   const [capturedImage, setCapturedImage] = useState(null); // To display captured image
-
+//hello
   useEffect(() => {
     startCamera();
     return () => {
