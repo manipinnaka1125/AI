@@ -118,38 +118,125 @@ const OCRAnswerBot = () => {
   };
 
   return (
-    <div>
-      <h1>OCR-AnswerBot</h1>
-      <video ref={videoRef} autoPlay playsInline style={{ width: "100%" }} />
-      <canvas ref={canvasRef} style={{ display: "none" }} />
-
-      {/* Button to capture the frame */}
-      <button onClick={captureFrame} disabled={isProcessing}>
+    <div style={styles.container}>
+      <h1 style={styles.header}>OCR-AnswerBot</h1>
+      <div style={styles.cameraContainer}>
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          style={styles.video}
+        />
+        <div style={styles.overlay}>Point the camera to any text!</div>
+      </div>
+      
+      <button 
+        onClick={captureFrame} 
+        disabled={isProcessing} 
+        style={styles.captureButton}
+      >
         {isProcessing ? "Processing..." : "Capture Snapshot"}
       </button>
 
       {/* Display captured image below */}
       {capturedImage && (
-        <div>
-          <h2>Captured Image:</h2>
+        <div style={styles.capturedImageContainer}>
+          <h3>Captured Image:</h3>
           <img
             src={capturedImage}
             alt="Captured Question"
-            style={{ width: "100%", maxWidth: "400px" }}
+            style={styles.capturedImage}
           />
         </div>
       )}
 
-      <div>
-        <h2>Recognized Text:</h2>
+      <div style={styles.resultContainer}>
+        <h3>Recognized Text:</h3>
         <p>{recognizedText}</p>
       </div>
-      <div>
-        <h2>Answer:</h2>
+
+      <div style={styles.resultContainer}>
+        <h3>Answer:</h3>
         <p>{answer}</p>
       </div>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    backgroundColor: "#f0f4f8",
+    padding: "20px",
+    borderRadius: "8px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    maxWidth: "600px",
+    margin: "auto",
+    height: "100vh",
+    justifyContent: "center",
+  },
+  header: {
+    fontSize: "2em",
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: "20px",
+  },
+  cameraContainer: {
+    position: "relative",
+    width: "100%",
+    height: "auto",
+    marginBottom: "20px",
+    borderRadius: "8px",
+    overflow: "hidden",
+  },
+  video: {
+    width: "100%",
+    height: "auto",
+    borderRadius: "8px",
+    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+  },
+  overlay: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    color: "#fff",
+    fontSize: "1.5em",
+    textShadow: "2px 2px 10px rgba(0, 0, 0, 0.5)",
+  },
+  captureButton: {
+    backgroundColor: "#4CAF50",
+    color: "#fff",
+    fontSize: "1.2em",
+    padding: "15px 30px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    margin: "20px 0",
+    transition: "background-color 0.3s",
+  },
+  capturedImageContainer: {
+    textAlign: "center",
+    marginTop: "20px",
+  },
+  capturedImage: {
+    maxWidth: "100%",
+    maxHeight: "300px",
+    borderRadius: "8px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+  },
+  resultContainer: {
+    textAlign: "center",
+    marginTop: "20px",
+    padding: "10px",
+    backgroundColor: "#fff",
+    borderRadius: "8px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    width: "100%",
+    maxWidth: "500px",
+  },
 };
 
 export default OCRAnswerBot;
